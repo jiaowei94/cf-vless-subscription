@@ -1,15 +1,17 @@
 import os
 import yaml
 
+# 从环境变量获取，确保去除空格
 uuid = os.environ.get('UUID', '').strip()
 host = os.environ.get('CF_WORKER_HOST', '').strip()
 
-# 尝试多个 Cloudflare 托管节点与通用 IP
+# 整理精选的 Cloudflare 国内优质节点/域名
 best_nodes = [
-    '1.1.1.1',
-    '1.0.0.1',
     '104.16.123.96',
     '104.19.146.22',
+    '104.16.160.1',
+    '172.67.180.1',
+    '162.159.192.1',
     'visa.cn'
 ]
 
@@ -29,13 +31,13 @@ for idx, node in enumerate(best_nodes):
         'network': 'ws',
         'tls': True,
         'udp': True,
-        'sni': host,
-        'skip-cert-verify': True,
+        'sni': host,                   # 必须为 vless.ai-small.xyz
+        'skip-cert-verify': False,      # 既然用了正常域名，可以设为 False
         'client-fingerprint': 'chrome',
         'ws-opts': {
             'path': '/',
             'headers': {
-                'Host': host
+                'Host': host            # 必须为 vless.ai-small.xyz
             }
         }
     }
@@ -75,4 +77,4 @@ clash_config = {
 with open('config.yaml', 'w', encoding='utf-8') as f:
     yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
 
-print("Updated config.yaml successfully!")
+print("Updated config.yaml with custom domain successfully!")
