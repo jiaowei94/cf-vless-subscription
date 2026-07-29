@@ -4,53 +4,35 @@ import yaml
 uuid = os.environ.get('UUID', '').strip()
 host = os.environ.get('CF_WORKER_HOST', '').strip() # vless.ai-small.xyz
 
-# 优选国内访问最顺畅的 Cloudflare 节点 IP
-cf_ips = [
-    '104.16.123.96',
-    '104.19.146.22',
-    '104.20.18.52',
-    '172.67.121.23',
-    '162.159.192.1'
+# 使用 Cloudflare 原生支持的 2053 备用端口，避开 443 端口拦截
+port = 2053
+
+# 精选优质 Anycast IP 与备用节点
+nodes_list = [
+    {'name': '备用端口-直连域名', 'server': host},
+    {'name': '备用端口-IP-1', 'server': '104.16.123.96'},
+    {'name': '备用端口-IP-2', 'server': '104.19.146.22'},
+    {'name': '备用端口-IP-3', 'server': '162.159.192.1'},
+    {'name': '备用端口-域名-Visa', 'server': 'visa.cn'}
 ]
 
 proxies_list = []
 proxy_names = []
 
-# 1. 添加一个直连域名节点
-proxies_list.append({
-    'name': 'Node-0-vless.ai-small.xyz',
-    'type': 'vless',
-    'server': host,
-    'port': 443,
-    'uuid': uuid,
-    'network': 'ws',
-    'tls': True,
-    'udp': True,
-    'sni': host,
-    'skip-cert-verify': True, # 强制跳过证书校验，解决 TLS 握手阻断
-    'client-fingerprint': 'chrome',
-    'ws-opts': {
-        'path': '/',
-        'headers': {
-            'Host': host
-        }
-    }
-})
-proxy_names.append('Node-0-vless.ai-small.xyz')
-
-# 2. 添加优选 IP 节点（固定 SNI 为你的自定义域名）
-for idx, ip in enumerate(cf_ips):
-    node_name = f"Node-{idx+1}-{ip}"
+for idx, item in enumerate(nodes_list):
+    node_name = f"Node-{idx+1}-{item['name']}"
     proxy_names.append(node_name)
-    proxies_list.append({
+    
+    node_config = {
         'name': node_name,
         'type': 'vless',
-        'server': ip,
-        'port': 443,
+        'server': item['server'],
+        'port': port,                  # 改用 2053 端口
         'uuid': uuid,
         'network': 'ws',
         'tls': True,
         'udp': True,
+        'servername': host,
         'sni': host,
         'skip-cert-verify': True,
         'client-fingerprint': 'chrome',
@@ -60,7 +42,8 @@ for idx, ip in enumerate(cf_ips):
                 'Host': host
             }
         }
-    })
+    }
+    proxies_list.append(node_config)
 
 clash_config = {
     'port': 7890,
@@ -79,10 +62,7 @@ clash_config = {
     'proxy-groups': [
         {
             'name': 'Auto-Select',
-            'type': 'url-test',
-            'url': 'http://www.gstatic.com/generate_204',
-            'interval': 300,
-            'tolerance': 50,
+            'type': 'select',
             'proxies': proxy_names
         }
     ],
@@ -96,4 +76,4 @@ clash_config = {
 with open('config.yaml', 'w', encoding='utf-8') as f:
     yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
 
-print("Updated config.yaml successfully!")
+print("Updated config.yaml with port 2053 successfully!")
