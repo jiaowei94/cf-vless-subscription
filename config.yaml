@@ -16,19 +16,19 @@ dns:
 proxies:
 - name: 直连节点-自定义域名
   type: vless
-  server: cf-vless-proxy.jiaoweixie94.workers.dev
+  server: vless.ai-small.xyz
   port: 443
   uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
   network: ws
   tls: true
   udp: true
-  sni: cf-vless-proxy.jiaoweixie94.workers.dev
+  sni: vless.ai-small.xyz
   skip-cert-verify: true
   client-fingerprint: chrome
   ws-opts:
     path: /
     headers:
-      Host: cf-vless-proxy.jiaoweixie94.workers.dev
+      Host: vless.ai-small.xyz
 proxy-groups:
 - name: Auto-Select
   type: select
