@@ -14,10 +14,10 @@ dns:
   - https://dns.alidns.com/dns-query
   - https://doh.pub/dns-query
 proxies:
-- name: Node-1-备用端口-直连域名
+- name: Node-1-反代域名-01
   type: vless
-  server: vless.ai-small.xyz
-  port: 2053
+  server: cf.090227.xyz
+  port: 443
   uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
   network: ws
   tls: true
@@ -27,13 +27,45 @@ proxies:
   skip-cert-verify: true
   client-fingerprint: chrome
   ws-opts:
-    path: /
+    path: /?ed=2048
     headers:
       Host: vless.ai-small.xyz
-- name: Node-2-备用端口-IP-1
+- name: Node-2-反代IP-02
+  type: vless
+  server: 104.21.80.1
+  port: 443
+  uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
+  network: ws
+  tls: true
+  udp: true
+  servername: vless.ai-small.xyz
+  sni: vless.ai-small.xyz
+  skip-cert-verify: true
+  client-fingerprint: chrome
+  ws-opts:
+    path: /?ed=2048
+    headers:
+      Host: vless.ai-small.xyz
+- name: Node-3-反代IP-03
+  type: vless
+  server: 172.67.200.1
+  port: 443
+  uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
+  network: ws
+  tls: true
+  udp: true
+  servername: vless.ai-small.xyz
+  sni: vless.ai-small.xyz
+  skip-cert-verify: true
+  client-fingerprint: chrome
+  ws-opts:
+    path: /?ed=2048
+    headers:
+      Host: vless.ai-small.xyz
+- name: Node-4-反代IP-04
   type: vless
   server: 104.16.123.96
-  port: 2053
+  port: 443
   uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
   network: ws
   tls: true
@@ -43,13 +75,13 @@ proxies:
   skip-cert-verify: true
   client-fingerprint: chrome
   ws-opts:
-    path: /
+    path: /?ed=2048
     headers:
       Host: vless.ai-small.xyz
-- name: Node-3-备用端口-IP-2
+- name: Node-5-直连域名-05
   type: vless
-  server: 104.19.146.22
-  port: 2053
+  server: vless.ai-small.xyz
+  port: 443
   uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
   network: ws
   tls: true
@@ -59,50 +91,18 @@ proxies:
   skip-cert-verify: true
   client-fingerprint: chrome
   ws-opts:
-    path: /
-    headers:
-      Host: vless.ai-small.xyz
-- name: Node-4-备用端口-IP-3
-  type: vless
-  server: 162.159.192.1
-  port: 2053
-  uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
-  network: ws
-  tls: true
-  udp: true
-  servername: vless.ai-small.xyz
-  sni: vless.ai-small.xyz
-  skip-cert-verify: true
-  client-fingerprint: chrome
-  ws-opts:
-    path: /
-    headers:
-      Host: vless.ai-small.xyz
-- name: Node-5-备用端口-域名-Visa
-  type: vless
-  server: visa.cn
-  port: 2053
-  uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
-  network: ws
-  tls: true
-  udp: true
-  servername: vless.ai-small.xyz
-  sni: vless.ai-small.xyz
-  skip-cert-verify: true
-  client-fingerprint: chrome
-  ws-opts:
-    path: /
+    path: /?ed=2048
     headers:
       Host: vless.ai-small.xyz
 proxy-groups:
 - name: Auto-Select
   type: select
   proxies:
-  - Node-1-备用端口-直连域名
-  - Node-2-备用端口-IP-1
-  - Node-3-备用端口-IP-2
-  - Node-4-备用端口-IP-3
-  - Node-5-备用端口-域名-Visa
+  - Node-1-反代域名-01
+  - Node-2-反代IP-02
+  - Node-3-反代IP-03
+  - Node-4-反代IP-04
+  - Node-5-直连域名-05
 rules:
 - GEOIP,LAN,DIRECT
 - GEOIP,CN,DIRECT

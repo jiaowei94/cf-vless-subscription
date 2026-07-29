@@ -4,42 +4,39 @@ import yaml
 uuid = os.environ.get('UUID', '').strip()
 host = os.environ.get('CF_WORKER_HOST', '').strip() # vless.ai-small.xyz
 
-# 使用 Cloudflare 原生支持的 2053 备用端口，避开 443 端口拦截
-port = 2053
-
-# 精选优质 Anycast IP 与备用节点
-nodes_list = [
-    {'name': '备用端口-直连域名', 'server': host},
-    {'name': '备用端口-IP-1', 'server': '104.16.123.96'},
-    {'name': '备用端口-IP-2', 'server': '104.19.146.22'},
-    {'name': '备用端口-IP-3', 'server': '162.159.192.1'},
-    {'name': '备用端口-域名-Visa', 'server': 'visa.cn'}
+# 社区优质的 Cloudflare 反代中转 IP/域名列表
+reverse_proxy_nodes = [
+    {'name': '反代域名-01', 'server': 'cf.090227.xyz'},
+    {'name': '反代IP-02', 'server': '104.21.80.1'},
+    {'name': '反代IP-03', 'server': '172.67.200.1'},
+    {'name': '反代IP-04', 'server': '104.16.123.96'},
+    {'name': '直连域名-05', 'server': host}
 ]
 
 proxies_list = []
 proxy_names = []
 
-for idx, item in enumerate(nodes_list):
+for idx, item in enumerate(reverse_proxy_nodes):
     node_name = f"Node-{idx+1}-{item['name']}"
     proxy_names.append(node_name)
     
     node_config = {
         'name': node_name,
         'type': 'vless',
-        'server': item['server'],
-        'port': port,                  # 改用 2053 端口
+        'server': item['server'],        # 连接反代 IP 避开 GFW 阻断
+        'port': 443,
         'uuid': uuid,
         'network': 'ws',
         'tls': True,
         'udp': True,
-        'servername': host,
+        'servername': host,             # SNI 指向你的自定义域名
         'sni': host,
         'skip-cert-verify': True,
         'client-fingerprint': 'chrome',
         'ws-opts': {
-            'path': '/',
+            'path': '/?ed=2048',         # 社区 Padding 抗封锁路径
             'headers': {
-                'Host': host
+                'Host': host            # Host 指向你的自定义域名
             }
         }
     }
@@ -62,7 +59,7 @@ clash_config = {
     'proxy-groups': [
         {
             'name': 'Auto-Select',
-            'type': 'select',
+            'type': 'select',          # 手动选择模式
             'proxies': proxy_names
         }
     ],
@@ -76,4 +73,4 @@ clash_config = {
 with open('config.yaml', 'w', encoding='utf-8') as f:
     yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
 
-print("Updated config.yaml with port 2053 successfully!")
+print("Updated config with edgetunnel reverse proxy successfully!")
