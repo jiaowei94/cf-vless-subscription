@@ -1,0 +1,104 @@
+name: Generate VLESS Subscription
+
+on:
+  workflow_dispatch: # 支持手动一键更新
+  schedule:
+    - cron: '0 */6 * * *' # 每 6 小时自动更新一次优选 IP
+
+permissions:
+  contents: write # 赋予脚本自动推送配置文件的权限
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Generate Clash Meta Config
+      env:
+        UUID: ${{ secrets.UUID }}
+        CF_WORKER_HOST: ${{ secrets.CF_WORKER_HOST }}
+      run: |
+        python -c "
+        import urllib.request, os
+        uuid = os.environ.get('UUID')
+        host = os.environ.get('CF_WORKER_HOST')
+
+        # 抓取最新的 Cloudflare 优选 IP（每日更新的开源库）
+        url = 'https://raw.githubusercontent.com/ymyuuu/IPDB/main/bestcf.txt'
+        try:
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            ips = urllib.request.urlopen(req).read().decode('utf-8').splitlines()
+        except:
+            ips = ['104.16.123.96', '104.19.146.22', '104.21.32.48', '172.67.121.23', '104.20.18.52']
+
+        valid_ips = [ip.strip() for ip in ips if ip.strip()][:30] # 提取前30个高质量IP
+
+        yaml_content = f'''port: 7890
+        socks-port: 7891
+        allow-lan: true
+        mode: rule
+        log-level: info
+        unified-delay: true
+        dns:
+          enable: true
+          listen: 0.0.0.0:53
+          default-nameserver: [223.5.5.5, 114.114.114.114]
+          nameserver: [https://dns.alidns.com/dns-query, https://doh.pub/dns-query]
+        proxies:
+        '''
+        proxy_names = []
+        for idx, ip in enumerate(valid_ips):
+            name = f'优选IP-{idx+1}-{ip}'
+            proxy_names.append(name)
+            yaml_content += f'''  - name: '{name}'
+            type: vless
+            server: {ip}
+            port: 443
+            uuid: {uuid}
+            network: ws
+            tls: true
+            udp: true
+            sni: {host}
+            client-fingerprint: chrome
+            ws-opts:
+              path: '/'
+              headers:
+                Host: {host}
+        '''
+        yaml_content += '''
+        proxy-groups:
+          - name: 🚀 自动选路
+            type: url-test
+            url: http://www.gstatic.com/generate_204
+            interval: 300
+            tolerance: 50
+            proxies:
+        '''
+        for name in proxy_names:
+            yaml_content += f'      - {name}\n'
+
+        yaml_content += '''
+        rules:
+          - GEOIP,LAN,DIRECT
+          - GEOIP,CN,DIRECT
+          - MATCH,🚀 自动选路
+        '''
+
+        with open('config.yaml', 'w', encoding='utf-8') as f:
+            f.write(yaml_content)
+        "
+
+    - name: Deploy to gh-pages branch
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./
+        publish_branch: gh-pages
+        keep_files: false
