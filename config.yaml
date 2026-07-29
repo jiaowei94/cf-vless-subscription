@@ -14,7 +14,37 @@ dns:
   - https://dns.alidns.com/dns-query
   - https://doh.pub/dns-query
 proxies:
-- name: Node-1-104.16.123.96
+- name: Node-1-1.1.1.1
+  type: vless
+  server: 1.1.1.1
+  port: 443
+  uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
+  network: ws
+  tls: true
+  udp: true
+  sni: cf-vless-proxy.jiaoweixie94.workers.dev
+  skip-cert-verify: true
+  client-fingerprint: chrome
+  ws-opts:
+    path: /
+    headers:
+      Host: cf-vless-proxy.jiaoweixie94.workers.dev
+- name: Node-2-1.0.0.1
+  type: vless
+  server: 1.0.0.1
+  port: 443
+  uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
+  network: ws
+  tls: true
+  udp: true
+  sni: cf-vless-proxy.jiaoweixie94.workers.dev
+  skip-cert-verify: true
+  client-fingerprint: chrome
+  ws-opts:
+    path: /
+    headers:
+      Host: cf-vless-proxy.jiaoweixie94.workers.dev
+- name: Node-3-104.16.123.96
   type: vless
   server: 104.16.123.96
   port: 443
@@ -29,7 +59,7 @@ proxies:
     path: /
     headers:
       Host: cf-vless-proxy.jiaoweixie94.workers.dev
-- name: Node-2-104.19.146.22
+- name: Node-4-104.19.146.22
   type: vless
   server: 104.19.146.22
   port: 443
@@ -44,144 +74,9 @@ proxies:
     path: /
     headers:
       Host: cf-vless-proxy.jiaoweixie94.workers.dev
-- name: Node-3-104.21.32.48
+- name: Node-5-visa.cn
   type: vless
-  server: 104.21.32.48
-  port: 443
-  uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
-  network: ws
-  tls: true
-  udp: true
-  sni: cf-vless-proxy.jiaoweixie94.workers.dev
-  skip-cert-verify: true
-  client-fingerprint: chrome
-  ws-opts:
-    path: /
-    headers:
-      Host: cf-vless-proxy.jiaoweixie94.workers.dev
-- name: Node-4-172.67.121.23
-  type: vless
-  server: 172.67.121.23
-  port: 443
-  uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
-  network: ws
-  tls: true
-  udp: true
-  sni: cf-vless-proxy.jiaoweixie94.workers.dev
-  skip-cert-verify: true
-  client-fingerprint: chrome
-  ws-opts:
-    path: /
-    headers:
-      Host: cf-vless-proxy.jiaoweixie94.workers.dev
-- name: Node-5-104.20.18.52
-  type: vless
-  server: 104.20.18.52
-  port: 443
-  uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
-  network: ws
-  tls: true
-  udp: true
-  sni: cf-vless-proxy.jiaoweixie94.workers.dev
-  skip-cert-verify: true
-  client-fingerprint: chrome
-  ws-opts:
-    path: /
-    headers:
-      Host: cf-vless-proxy.jiaoweixie94.workers.dev
-- name: Node-6-162.159.192.1
-  type: vless
-  server: 162.159.192.1
-  port: 443
-  uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
-  network: ws
-  tls: true
-  udp: true
-  sni: cf-vless-proxy.jiaoweixie94.workers.dev
-  skip-cert-verify: true
-  client-fingerprint: chrome
-  ws-opts:
-    path: /
-    headers:
-      Host: cf-vless-proxy.jiaoweixie94.workers.dev
-- name: Node-7-162.159.193.1
-  type: vless
-  server: 162.159.193.1
-  port: 443
-  uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
-  network: ws
-  tls: true
-  udp: true
-  sni: cf-vless-proxy.jiaoweixie94.workers.dev
-  skip-cert-verify: true
-  client-fingerprint: chrome
-  ws-opts:
-    path: /
-    headers:
-      Host: cf-vless-proxy.jiaoweixie94.workers.dev
-- name: Node-8-162.159.195.1
-  type: vless
-  server: 162.159.195.1
-  port: 443
-  uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
-  network: ws
-  tls: true
-  udp: true
-  sni: cf-vless-proxy.jiaoweixie94.workers.dev
-  skip-cert-verify: true
-  client-fingerprint: chrome
-  ws-opts:
-    path: /
-    headers:
-      Host: cf-vless-proxy.jiaoweixie94.workers.dev
-- name: Node-9-104.16.160.1
-  type: vless
-  server: 104.16.160.1
-  port: 443
-  uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
-  network: ws
-  tls: true
-  udp: true
-  sni: cf-vless-proxy.jiaoweixie94.workers.dev
-  skip-cert-verify: true
-  client-fingerprint: chrome
-  ws-opts:
-    path: /
-    headers:
-      Host: cf-vless-proxy.jiaoweixie94.workers.dev
-- name: Node-10-104.17.160.1
-  type: vless
-  server: 104.17.160.1
-  port: 443
-  uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
-  network: ws
-  tls: true
-  udp: true
-  sni: cf-vless-proxy.jiaoweixie94.workers.dev
-  skip-cert-verify: true
-  client-fingerprint: chrome
-  ws-opts:
-    path: /
-    headers:
-      Host: cf-vless-proxy.jiaoweixie94.workers.dev
-- name: Node-11-104.18.160.1
-  type: vless
-  server: 104.18.160.1
-  port: 443
-  uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
-  network: ws
-  tls: true
-  udp: true
-  sni: cf-vless-proxy.jiaoweixie94.workers.dev
-  skip-cert-verify: true
-  client-fingerprint: chrome
-  ws-opts:
-    path: /
-    headers:
-      Host: cf-vless-proxy.jiaoweixie94.workers.dev
-- name: Node-12-104.19.160.1
-  type: vless
-  server: 104.19.160.1
+  server: visa.cn
   port: 443
   uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
   network: ws
@@ -201,18 +96,11 @@ proxy-groups:
   interval: 300
   tolerance: 50
   proxies:
-  - Node-1-104.16.123.96
-  - Node-2-104.19.146.22
-  - Node-3-104.21.32.48
-  - Node-4-172.67.121.23
-  - Node-5-104.20.18.52
-  - Node-6-162.159.192.1
-  - Node-7-162.159.193.1
-  - Node-8-162.159.195.1
-  - Node-9-104.16.160.1
-  - Node-10-104.17.160.1
-  - Node-11-104.18.160.1
-  - Node-12-104.19.160.1
+  - Node-1-1.1.1.1
+  - Node-2-1.0.0.1
+  - Node-3-104.16.123.96
+  - Node-4-104.19.146.22
+  - Node-5-visa.cn
 rules:
 - GEOIP,LAN,DIRECT
 - GEOIP,CN,DIRECT
