@@ -9,9 +9,9 @@ port = 2053
 
 # 精选优质 Anycast IP 与备用节点
 nodes_list = [
-    {'name': '备用端口-直连域名', 'server': host},
-    {'name': '备用端口-IP-1', 'server': '104.16.123.96'},
-    {'name': '备用端口-IP-2', 'server': '104.19.146.22'},
+    {'name': '备用端口-直连域名', 'server': cf.090227.xyz},
+    {'name': '备用端口-IP-1', 'server': '104.21.80.1'},
+    {'name': '备用端口-IP-2', 'server': '172.67.200.1'},
     {'name': '备用端口-IP-3', 'server': '162.159.192.1'},
     {'name': '备用端口-域名-Visa', 'server': 'visa.cn'}
 ]
