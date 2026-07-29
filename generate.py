@@ -1,44 +1,36 @@
 import os
 import yaml
 
-# 从 Secrets 环境变量读取
 uuid = os.environ.get('UUID', '').strip()
 host = os.environ.get('CF_WORKER_HOST', '').strip()
 
-# 精选国内三大运营商最稳定的 Cloudflare 官方直连 IP（100% 支持 443 TLS 端口）
-best_ips = [
+# 尝试多个 Cloudflare 托管节点与通用 IP
+best_nodes = [
+    '1.1.1.1',
+    '1.0.0.1',
     '104.16.123.96',
     '104.19.146.22',
-    '104.21.32.48',
-    '172.67.121.23',
-    '104.20.18.52',
-    '162.159.192.1',
-    '162.159.193.1',
-    '162.159.195.1',
-    '104.16.160.1',
-    '104.17.160.1',
-    '104.18.160.1',
-    '104.19.160.1'
+    'visa.cn'
 ]
 
 proxies_list = []
 proxy_names = []
 
-for idx, ip in enumerate(best_ips):
-    node_name = f"Node-{idx+1}-{ip}"
+for idx, node in enumerate(best_nodes):
+    node_name = f"Node-{idx+1}-{node}"
     proxy_names.append(node_name)
     
     node_config = {
         'name': node_name,
         'type': 'vless',
-        'server': ip,
+        'server': node,
         'port': 443,
         'uuid': uuid,
         'network': 'ws',
         'tls': True,
         'udp': True,
         'sni': host,
-        'skip-cert-verify': True, # 跳过证书检查，解决 TLS 握手失败
+        'skip-cert-verify': True,
         'client-fingerprint': 'chrome',
         'ws-opts': {
             'path': '/',
@@ -83,4 +75,4 @@ clash_config = {
 with open('config.yaml', 'w', encoding='utf-8') as f:
     yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
 
-print("config.yaml updated with reliable IPs!")
+print("Updated config.yaml successfully!")
