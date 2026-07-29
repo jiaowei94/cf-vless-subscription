@@ -14,7 +14,7 @@ dns:
   - https://dns.alidns.com/dns-query
   - https://doh.pub/dns-query
 proxies:
-- name: 直连节点-自定义域名
+- name: Node-0-vless.ai-small.xyz
   type: vless
   server: vless.ai-small.xyz
   port: 443
@@ -29,11 +29,94 @@ proxies:
     path: /
     headers:
       Host: vless.ai-small.xyz
+- name: Node-1-104.16.123.96
+  type: vless
+  server: 104.16.123.96
+  port: 443
+  uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
+  network: ws
+  tls: true
+  udp: true
+  sni: vless.ai-small.xyz
+  skip-cert-verify: true
+  client-fingerprint: chrome
+  ws-opts:
+    path: /
+    headers:
+      Host: vless.ai-small.xyz
+- name: Node-2-104.19.146.22
+  type: vless
+  server: 104.19.146.22
+  port: 443
+  uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
+  network: ws
+  tls: true
+  udp: true
+  sni: vless.ai-small.xyz
+  skip-cert-verify: true
+  client-fingerprint: chrome
+  ws-opts:
+    path: /
+    headers:
+      Host: vless.ai-small.xyz
+- name: Node-3-104.20.18.52
+  type: vless
+  server: 104.20.18.52
+  port: 443
+  uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
+  network: ws
+  tls: true
+  udp: true
+  sni: vless.ai-small.xyz
+  skip-cert-verify: true
+  client-fingerprint: chrome
+  ws-opts:
+    path: /
+    headers:
+      Host: vless.ai-small.xyz
+- name: Node-4-172.67.121.23
+  type: vless
+  server: 172.67.121.23
+  port: 443
+  uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
+  network: ws
+  tls: true
+  udp: true
+  sni: vless.ai-small.xyz
+  skip-cert-verify: true
+  client-fingerprint: chrome
+  ws-opts:
+    path: /
+    headers:
+      Host: vless.ai-small.xyz
+- name: Node-5-162.159.192.1
+  type: vless
+  server: 162.159.192.1
+  port: 443
+  uuid: c32e9f81-5d41-4b19-9c17-48f657a82b92
+  network: ws
+  tls: true
+  udp: true
+  sni: vless.ai-small.xyz
+  skip-cert-verify: true
+  client-fingerprint: chrome
+  ws-opts:
+    path: /
+    headers:
+      Host: vless.ai-small.xyz
 proxy-groups:
 - name: Auto-Select
-  type: select
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
   proxies:
-  - 直连节点-自定义域名
+  - Node-0-vless.ai-small.xyz
+  - Node-1-104.16.123.96
+  - Node-2-104.19.146.22
+  - Node-3-104.20.18.52
+  - Node-4-172.67.121.23
+  - Node-5-162.159.192.1
 rules:
 - GEOIP,LAN,DIRECT
 - GEOIP,CN,DIRECT
