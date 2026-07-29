@@ -1,9 +1,12 @@
 import urllib.request
 import os
+import yaml
 
+# 从 Secrets 环境变量读取
 uuid = os.environ.get('UUID', '').strip()
 host = os.environ.get('CF_WORKER_HOST', '').strip()
 
+# 抓取优选 IP 列表
 url = 'https://raw.githubusercontent.com/ymyuuu/IPDB/main/bestcf.txt'
 try:
     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
@@ -14,57 +17,70 @@ except Exception as e:
 
 valid_ips = [ip.strip() for ip in ips if ip.strip()][:30]
 
-lines = [
-    "port: 7890",
-    "socks-port: 7891",
-    "allow-lan: true",
-    "mode: rule",
-    "log-level: info",
-    "unified-delay: true",
-    "dns:",
-    "  enable: true",
-    "  listen: 0.0.0.0:53",
-    "  default-nameserver: [223.5.5.5, 114.114.114.114]",
-    "  nameserver: [https://dns.alidns.com/dns-query, https://doh.pub/dns-query]",
-    "proxies:"
-]
-
+# 构建标准的 Python 数据结构，彻底避免语法与名称拼写不一致
+proxies_list = []
 proxy_names = []
+
 for idx, ip in enumerate(valid_ips):
-    name = f"优选IP-{idx+1}-{ip}"
-    proxy_names.append(name)
-    lines.append(f"  - name: '{name}'")
-    lines.append("    type: vless")
-    lines.append(f"    server: {ip}")
-    lines.append("    port: 443")
-    lines.append(f"    uuid: {uuid}")
-    lines.append("    network: ws")
-    lines.append("    tls: true")
-    lines.append("    udp: true")
-    lines.append(f"    sni: {host}")
-    lines.append("    client-fingerprint: chrome")
-    lines.append("    ws-opts:")
-    lines.append("      path: '/'")
-    lines.append("      headers:")
-    lines.append(f"        Host: {host}")
+    # 统一命名规范
+    node_name = f"Node-{idx+1}-{ip}"
+    proxy_names.append(node_name)
+    
+    # 每一个节点的独立字典定义
+    node_config = {
+        'name': node_name,
+        'type': 'vless',
+        'server': ip,
+        'port': 443,
+        'uuid': uuid,
+        'network': 'ws',
+        'tls': True,
+        'udp': True,
+        'sni': host,
+        'client-fingerprint': 'chrome',
+        'ws-opts': {
+            'path': '/',
+            'headers': {
+                'Host': host
+            }
+        }
+    }
+    proxies_list.append(node_config)
 
-lines.append("proxy-groups:")
-lines.append("  - name: 🚀 自动选路")
-lines.append("    type: url-test")
-lines.append("    url: http://www.gstatic.com/generate_204")
-lines.append("    interval: 300")
-lines.append("    tolerance: 50")
-lines.append("    proxies:")
+# 完整 Clash Meta 字典
+clash_config = {
+    'port': 7890,
+    'socks-port': 7891,
+    'allow-lan': True,
+    'mode': 'rule',
+    'log-level': 'info',
+    'unified-delay': True,
+    'dns': {
+        'enable': True,
+        'listen': '0.0.0.0:53',
+        'default-nameserver': ['223.5.5.5', '114.114.114.114'],
+        'nameserver': ['https://dns.alidns.com/dns-query', 'https://doh.pub/dns-query']
+    },
+    'proxies': proxies_list,
+    'proxy-groups': [
+        {
+            'name': 'Auto-Select', # 使用无特殊字符的统一英文名称
+            'type': 'url-test',
+            'url': 'http://www.gstatic.com/generate_204',
+            'interval': 300,
+            'tolerance': 50,
+            'proxies': proxy_names # 强关联，确保策略组引用的名称与节点完全一致
+        }
+    ],
+    'rules': [
+        'GEOIP,LAN,DIRECT',
+        'GEOIP,CN,DIRECT',
+        'MATCH,Auto-Select'
+    ]
+}
 
-for name in proxy_names:
-    lines.append(f"      - '{name}'")
-
-lines.append("rules:")
-lines.append("  - GEOIP,LAN,DIRECT")
-lines.append("  - GEOIP,CN,DIRECT")
-lines.append("  - MATCH,🚀 自动选路")
-
+# 使用官方 PyYAML 进行格式化输出，严格确保缩进合规
 with open('config.yaml', 'w', encoding='utf-8') as f:
-    f.write('\n'.join(lines))
+    yaml.dump(clash_config, f, allow_unicode=True, sort_keys=False)
 
-print("config.yaml generated successfully!")
+print("config.yaml generated successfully via PyYAML!")
